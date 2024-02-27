@@ -23,7 +23,7 @@ After cloning this repo, run the `setup_nvim.sh` helper script using
 The script is set to use bash but you could edit the first line to reflect the shell of your choice.
 (I have to keep switching between bash, ksh).
 It installs the `nvim.appimage`, makes it an executable and pulls in the config files from `kickstart.nvim`.
-This also sets up the `.config/nvim` directory separately which is needed if you aren't using stow.
+This also sets up the `$HOME/.config/nvim` directory separately which is needed if you aren't using stow.
 It also sets an alias for `nvim` so that you can use Neovim as usual by calling `nvim <dir/file>`
    
 ---
