@@ -1,0 +1,117 @@
+# espanso match file
+
+# For a complete introduction, visit the official docs at: https://espanso.org/docs/
+
+# You can use this file to define the base matches (aka snippets)
+# that will be available in every application when using espanso.
+
+# Matches are substitution rules: when you type the "trigger" string
+# it gets replaced by the "replace" string.
+matches:
+  # Simple text replacement
+  - trigger: ":espanso"
+    replace: "C:\\Users\\barun\\AppData\\Roaming\\espanso\\match\\base.yml"
+
+  # NOTE: espanso uses YAML to define matches, so pay attention to the indentation!
+
+  # But matches can also be dynamic:
+
+  # Print the current date
+  - trigger: ":date"
+    replace: "{{mydate}}"
+    vars:
+      - name: mydate
+        type: date
+        params:
+          format: "%m/%d/%Y"
+
+  # Print the output of a shell command
+  - trigger: ":shell"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: shell
+        params:
+          cmd: "echo 'Hello from your shell'"
+
+
+    # WSL triggers
+  - trigger: ":wsl/pass"
+    replace: "$Wu:su_Ba9thelef0asd"
+
+  # Custom triggers
+  - trigger: ":em1"
+    replace: "barun.das.23@gmail.com"
+
+  - trigger: ":em2"
+    replace: "bdas31@gatech.edu"
+
+  - trigger: ":em3"
+    replace: "barun13.iitkgp@gmail.com"
+
+  - trigger: ":pwd1"
+    replace: "barun2303"
+
+  - trigger: ":tlw"
+    replace: "theleftwinger"
+
+  - trigger: ":_tlw"
+    replace: "the_left_winger"
+
+  - trigger: ":lnkd"
+    replace: "https://www.linkedin.com/in/barun-das/"
+
+  - trigger: ":pwb"
+    replace: "https://www.barundas.com/"
+
+  - trigger: ":gh"
+    replace: "https://github.com/BarunKGP"
+
+  - trigger: ":GT"
+    replace: "Georgia Institute of Technology"
+
+  - trigger: ":gtid"
+    replace: "903640949"
+
+  - trigger: ":name"
+    replace: "Barun Das"
+
+  - trigger: ":ems"
+    replace: "Sincerely, \nBarun Das"
+
+  - trigger: ":addr1"
+    replace: "505 Courtland St NE"
+
+  - trigger: ":addr2"
+    replace: "Flat 2B, Angan Co-operative, BF-44, Street 169, Action Area 1, Newtown, Kolkata - 700156"
+
+  - trigger: ":kgp"
+    replace: "Indian Institute of Technology Kharagpur"
+  
+  - trigger: ":ph1"
+    replace: "4708381164"
+
+  - trigger: ":gm"
+    replace: "Good morning"
+
+  - trigger: ":visa"
+    replace: "Currently on F1 visa, will need support for OPT"
+
+  #VS Code + Git triggers
+  - trigger: ":gcd"
+    replace: "debugging"
+
+  - trigger: ":gcr"
+    replace: "refactoring"
+
+  - trigger: ":gcdel"
+    replace: "removed files"
+
+  - trigger: ":gcu"
+    replace: "updated code"
+
+ 
+
+  
+
+  # And much more! For more information, visit the docs: https://espanso.org/docs/

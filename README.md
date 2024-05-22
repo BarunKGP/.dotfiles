@@ -32,3 +32,13 @@ It also sets an alias for `nvim` so that you can use Neovim as usual by calling 
 This repo contains configurations for:
 - tmux
 - Neovim
+- espanso
+
+### Setting up espanso
+espanso is a text expander based on YAML, which I use to store frequently used snippets such as emails, personal information, (names, addresses, phone numbers), etc., which I can then quickly populate in any new machine.
+
+#### Steps:
+1. Install [espanso](https://espanso.org/docs/get-started/) for your system.
+2. Pull these stored snippets and configurations.
+3. Move the `espanso` folder to the [https://espanso.org/docs/get-started/#configuration](location expected by espanso). Alternatively, you could explore how the edit the location where espanso looks for configs and matches, and then you can store this folder wherever you choose.
+4. Reload the espanso config if needed. You should now be ready to use these snippets on your system
