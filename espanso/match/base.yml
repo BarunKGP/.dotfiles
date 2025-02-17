@@ -110,12 +110,6 @@ matches:
   - trigger: ":gcu"
     replace: "updated code"
 
-  - trigger: ":_ght"  # GitHub Tokem (code-interaction: default token)
-    replace: "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"
-
-  - trigger: ":_ghp"    # GitHub PAT (Zatopoek)
-    replace: "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"
-
   # Emory BMI triggers  
   - trigger: ":oddbmi"
     replace: "baDa2398%emory"
