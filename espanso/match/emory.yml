@@ -1,0 +1,10 @@
+match:
+  - trigger: ":oddbmi"
+    replace: "baDa2398%emory"
+  
+  - trigger: ":cfd/data"
+    replace: "/labs/cliffordlab/data/cfd/4yrstudy"
+
+  ## EAC Testing
+  - trigger: ":pipwd"
+    replace: "Ywydtg3074!@"

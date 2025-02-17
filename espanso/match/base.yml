@@ -110,17 +110,4 @@ matches:
   - trigger: ":gcu"
     replace: "updated code"
 
-  # Emory BMI triggers  
-  - trigger: ":oddbmi"
-    replace: "baDa2398%emory"
-  
-  - trigger: ":cfd/data"
-    replace: "/labs/cliffordlab/data/cfd/4yrstudy"
-
-  ## EAC Testing
-  - trigger: ":pipwd"
-    replace: "Ywydtg3074!@"
-
-  
-
   # And much more! For more information, visit the docs: https://espanso.org/docs/
