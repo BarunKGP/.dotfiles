@@ -34,7 +34,7 @@ This repo contains configurations for:
 - Neovim
 - espanso
 
-### Setting up espanso
+### Espanso
 espanso is a text expander based on YAML, which I use to store frequently used snippets such as emails, personal information, (names, addresses, phone numbers), etc., which I can then quickly populate in any new machine.
 
 #### Steps:
@@ -47,3 +47,11 @@ espanso is a text expander based on YAML, which I use to store frequently used s
 #### NOTE: 
 1. You should not store passwords and secrets in espanso. Do not treat it as a security solution. 
 2. If you do store any sensitive information on your local config (not recommended), make sure they are ignored during backup. Any passwords and tokens will be detected by Github and the push will fail.
+
+#### Restoring espanso matchers
+- Ensure you have the `ESPANSO_PATH` environment variable set up pointing to the `match` directory
+- Copy the matcher files from `espanso/match/` to `$ESPANSO_PATH/match`
+	- This may overwrite existing matchers. Make sure you create a backup for your existing matchers 
+- You can also copy the config files from `espanso/config/` to `ESPANSO_PATH/config`
+- Restart espanso to load your new matchers: `espanso restart`
+	- NOTE: This command should be run on the host system where you installed espanso. If you have espanso on Windows and are using WSL to setup dotfiles, this command needs to be run on the Windows system itself.
