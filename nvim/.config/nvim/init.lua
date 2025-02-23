@@ -60,6 +60,11 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+
+vim.opt.shiftwidth = 4
+vim.opt.tabstop = 4
+-- vim.opt.expandtab = 2
+
 -- [[ Configure plugins ]]
 -- NOTE: Here is where you install your plugins.
 --  You can configure plugins using the `config` key.
@@ -153,22 +158,61 @@ require('lazy').setup({
   },
 
   {
-    -- Theme inspired by Atom
-    --   'navarasu/onedark.nvim',
-    --   priority = 1000,
-    --   config = function()
-    --     vim.cmd.colorscheme 'onedark'
-    --   end,
-    -- },
-
-    -- Theme inspired by Atom
-    'kepano/flexoki-neovim',
+    'navarasu/onedark.nvim',
     priority = 1000,
     config = function()
-      vim.cmd.colorscheme 'flexoki-dark'
+      require('onedark').setup {
+        -- Main options --
+        style = 'light',              -- Default theme style. Choose between 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer' and 'light'
+        transparent = false,          -- Show/hide background
+        term_colors = true,           -- Change terminal color as per the selected theme style
+        ending_tildes = false,        -- Show the end-of-buffer tildes. By default they are hidden
+        cmp_itemkind_reverse = false, -- reverse item kind highlights in cmp menu
+
+        -- toggle theme style ---
+        toggle_style_key = "<leader>ct",                                                     -- keybind to toggle theme style. Leave it nil to disable it, or set it to a string, for example "<leader>ts"
+        toggle_style_list = { 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer', 'light' }, -- List of styles to toggle between
+
+        -- Change code style ---
+        -- Options are italic, bold, underline, none
+        -- You can configure multiple style with comma separated, For e.g., keywords = 'italic,bold'
+        code_style = {
+          comments = 'italic',
+          keywords = 'none',
+          functions = 'none',
+          strings = 'none',
+          variables = 'none'
+        },
+
+        -- Lualine options --
+        lualine = {
+          transparent = false, -- lualine center bar transparency
+        },
+
+        -- Custom Highlights --
+        colors = {},     -- Override default colors
+        highlights = {}, -- Override highlight groups
+
+        -- Plugins Config --
+        diagnostics = {
+          darker = true,     -- darker colors for diagnostic
+          undercurl = true,  -- use undercurl instead of underline for diagnostics
+          background = true, -- use background color for virtual text
+        },
+      }
+      require('onedark').load()
+      vim.cmd.colorscheme 'onedark'
     end,
   },
 
+  --   -- Theme inspired by Atom
+  --   'kepano/flexoki-neovim',
+  --   priority = 1000,
+  --   config = function()
+  --     vim.cmd.colorscheme 'flexoki-dark'
+  --   end,
+  -- },
+  --
   {
     -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
@@ -226,7 +270,9 @@ require('lazy').setup({
   },
   {
     'mawkler/modicator.nvim',
-    dependencies = 'kepano/flexoki-neovim', -- Add your colorscheme plugin here
+    -- dependencies = 'kepano/flexoki-neovim', -- Add your colorscheme plugin here
+    -- dependencies = 'rose-pine/neovim', -- Add your colorscheme plugin here
+    dependencies = 'mawkler/onedark.nvim', -- Add your colorscheme plugin here
     init = function()
       -- These are required for Modicator to work
       vim.o.cursorline = true
@@ -238,12 +284,14 @@ require('lazy').setup({
       -- if some other plugin modifies them, which in that case you can just
       -- ignore. Feel free to remove this line after you've gotten Modicator to
       -- work properly.
-      show_warnings = true,
+      -- show_warnings = true,
     }
   },
 
   -- Themes
-  { 'kepano/flexoki-neovim',  name = 'flexoki' },
+  -- { 'kepano/flexoki-neovim',  name = 'flexoki' },
+  -- { 'rose-pine/neovim',  name = 'rose-pine' },
+
 
   -- {
   --   'numToStr/Comment.nvim',
@@ -264,7 +312,6 @@ require('lazy').setup({
   --
   --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
   { import = 'custom.plugins' },
-}, {
 })
 
 -- [[ Setting options ]]
@@ -325,8 +372,8 @@ vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open float
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
 
 -- Swtich windows for nvim-tree
-vim.keymap.set('n', '<C-h>', '<C-w><Left>', { noremap = true, silent = true })
-vim.keymap.set('n', '<C-l>', '<C-w><Right>', { noremap = true, silent = true })
+vim.keymap.set('n', '<M-h>', '<C-w><Left>', { noremap = true, silent = true })
+vim.keymap.set('n', '<M-l>', '<C-w><Right>', { noremap = true, silent = true })
 
 -- Toggle between line numbers and relative line numbers
 vim.keymap.set('n', '<leader>nu', function()
@@ -349,6 +396,10 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = highlight_group,
   pattern = '*',
 })
+
+
+-- Configure theme: onedark
+-- require('onedark').load()
 
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
@@ -382,6 +433,8 @@ require("noice").setup({
     lsp_doc_border = false,       -- add a border to hover docs and signature help
   },
 })
+
+
 
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
@@ -529,7 +582,7 @@ local on_attach = function(_, bufnr)
   end
 
 
-  nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+  nmap('<leader>r', vim.lsp.buf.rename, '[R]e[n]ame')
   nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
 
   nmap('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
@@ -682,15 +735,17 @@ vim.g.loaded_netrwPlugin = 1
 
 -- setup nvim-tree with some options
 require("nvim-tree").setup({
-  -- on_attach = function (bufnr)
-  --   local api = require 'nvim-tree.api'
-  --
-  --   local function opts(desc)
-  --     return {desc="nvim-tree: " ..desc, buffer=bufnr, noremap=true, silent=true, nowait=true}
-  --   end
-  --
-  --   vim.keymap.set('n', '<C-t>', api.tree.toggle, opts('Toggle NvimTree'))
-  --   end,
+  on_attach = function(bufnr)
+    local api = require 'nvim-tree.api'
+
+    local function opts(desc)
+      return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+    end
+
+    api.config.mappings.default_on_attach(bufnr)
+
+    vim.keymap.set('n', '<leader>nt', api.tree.toggle, opts('Toggle NvimTree'))
+  end,
   sort = {
     sorter = "case_sensitive",
   },
@@ -706,48 +761,6 @@ require("nvim-tree").setup({
 })
 
 require 'utils'
-
--- local options_append = {
--- 	netrw_keepdir = 0, --Keep the current directory and the browsing directory synced
--- 	netrw_winsize = "17", -- 17% size
--- 	netrw_banner = "0", -- hide banner
--- 	netrw_localmkdir = "mkdir -p", -- change mkdir cmd
--- 	netrw_localcopycmd = "cp -r", -- change copy command
--- 	netrw_localrmdir = "rm -r", -- change delete command
--- 	netrw_list_hide = [['\(^\|\s\s\)\zs\.\S\+']],
--- }
-
--- for k, v in pairs(options_append) do
--- 	g[k] = v
--- end
-
--- autocmd("filetype", {
--- 	pattern = "netrw",
--- 	desc = "Better mappings for netrw",
--- 	callback = function()    -- Navigation
--- 		local bind = function(lhs, rhs)
--- 			vim.keymap.set("n", lhs, rhs, { remap = true, buffer = true })
---     end
--- 		bind("H", "u") -- preview dir
--- 		bind("h", "-^") -- go up
--- 		bind("l", "<CR>") -- open file or dir
--- 		bind(".", "gh") -- toggle dotfiles
--- 		bind("<leader>dd", ":Lexplore<CR>") -- close if open
-
--- 		-- Marks
--- 		bind("<TAB>", "mf") -- toggle mark
--- 		bind("<S-TAB>", "mF") -- unmark
--- 		bind("<leader><TAB>", "mu") -- unmark all
-
--- 		-- Files
--- 		bind("ff", ":!touch ") -- create file
--- 		bind("fd", ":!mkdir -p ") -- create folder
--- 		bind("fm", ":!mv ") -- move/rename
--- 		bind("fc", ":!cp -r ") -- copy
--- 		bind("D", ":!rm -r ") -- delete
--- 		bind("f;", "mx") -- run command
--- 	end,
--- })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
