@@ -115,6 +115,21 @@ require("lazy").setup({
     },
   },
 
+  {
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    ---@type Flash.Config
+    opts = {},
+    -- stylua: ignore
+    keys = {
+      { "s",     mode = { "n", "x", "o" }, function() require("flash").jump() end,              desc = "Flash" },
+      { "S",     mode = { "n", "x", "o" }, function() require("flash").treesitter() end,        desc = "Flash Treesitter" },
+      { "r",     mode = "o",               function() require("flash").remote() end,            desc = "Remote Flash" },
+      { "R",     mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+      { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc = "Toggle Flash Search" },
+    },
+  },
+
   -- Useful plugin to show you pending keybinds.
   { "folke/which-key.nvim",  opts = {} },
   {
@@ -167,14 +182,14 @@ require("lazy").setup({
     config = function()
       require("onedark").setup({
         -- Main options --
-        style = "light",          -- Default theme style. Choose between 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer' and 'light'
-        transparent = false,      -- Show/hide background
-        term_colors = true,       -- Change terminal color as per the selected theme style
-        ending_tildes = false,    -- Show the end-of-buffer tildes. By default they are hidden
+        style = "light",              -- Default theme style. Choose between 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer' and 'light'
+        transparent = false,          -- Show/hide background
+        term_colors = true,           -- Change terminal color as per the selected theme style
+        ending_tildes = false,        -- Show the end-of-buffer tildes. By default they are hidden
         cmp_itemkind_reverse = false, -- reverse item kind highlights in cmp menu
 
         -- toggle theme style ---
-        toggle_style_key = "<leader>ct",                                                 -- keybind to toggle theme style. Leave it nil to disable it, or set it to a string, for example "<leader>ts"
+        toggle_style_key = "<leader>ct",                                                     -- keybind to toggle theme style. Leave it nil to disable it, or set it to a string, for example "<leader>ts"
         toggle_style_list = { "dark", "darker", "cool", "deep", "warm", "warmer", "light" }, -- List of styles to toggle between
 
         -- Change code style ---
@@ -194,13 +209,13 @@ require("lazy").setup({
         },
 
         -- Custom Highlights --
-        colors = {}, -- Override default colors
+        colors = {},     -- Override default colors
         highlights = {}, -- Override highlight groups
 
         -- Plugins Config --
         diagnostics = {
-          darker = true, -- darker colors for diagnostic
-          undercurl = true, -- use undercurl instead of underline for diagnostics
+          darker = true,     -- darker colors for diagnostic
+          undercurl = true,  -- use undercurl instead of underline for diagnostics
           background = true, -- use background color for virtual text
         },
       })
@@ -427,11 +442,11 @@ require("noice").setup({
   },
   -- you can enable a preset for easier configuration
   presets = {
-    bottom_search = true,       -- use a classic bottom cmdline for search
-    command_palette = true,     -- position the cmdline and popupmenu together
+    bottom_search = true,         -- use a classic bottom cmdline for search
+    command_palette = true,       -- position the cmdline and popupmenu together
     long_message_to_split = true, -- long messages will be sent to a split
-    inc_rename = false,         -- enables an input dialog for inc-rename.nvim
-    lsp_doc_border = false,     -- add a border to hover docs and signature help
+    inc_rename = false,           -- enables an input dialog for inc-rename.nvim
+    lsp_doc_border = false,       -- add a border to hover docs and signature help
   },
 })
 
@@ -622,13 +637,27 @@ end
 
 -- document existing key chains
 require("which-key").register({
-  ["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
-  ["<leader>d"] = { name = "[D]ocument", _ = "which_key_ignore" },
-  ["<leader>g"] = { name = "[G]it", _ = "which_key_ignore" },
-  ["<leader>h"] = { name = "More git", _ = "which_key_ignore" },
-  ["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
-  ["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
-  ["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
+  -- ["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
+  -- ["<leader>d"] = { name = "[D]ocument", _ = "which_key_ignore" },
+  -- ["<leader>g"] = { name = "[G]it", _ = "which_key_ignore" },
+  -- ["<leader>h"] = { name = "More git", _ = "which_key_ignore" },
+  -- ["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
+  -- ["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
+  -- ["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
+  { "<leader>c",  group = "[C]ode" },
+  { "<leader>c_", hidden = true },
+  { "<leader>d",  group = "[D]ocument" },
+  { "<leader>d_", hidden = true },
+  { "<leader>g",  group = "[G]it" },
+  { "<leader>g_", hidden = true },
+  { "<leader>h",  group = "More git" },
+  { "<leader>h_", hidden = true },
+  { "<leader>r",  group = "[R]ename" },
+  { "<leader>r_", hidden = true },
+  { "<leader>s",  group = "[S]earch" },
+  { "<leader>s_", hidden = true },
+  { "<leader>w",  group = "[W]orkspace" },
+  { "<leader>w_", hidden = true },
 })
 
 -- mason-lspconfig requires that these setup functions are called in this order
