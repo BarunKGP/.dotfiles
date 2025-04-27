@@ -205,7 +205,7 @@ require("lazy").setup({
 
         -- Lualine options --
         lualine = {
-          transparent = false, -- lualine center bar transparency
+          transparent = false, -- lualine center bar transparencylet g
         },
 
         -- Custom Highlights --
@@ -676,7 +676,7 @@ require("mason-lspconfig").setup()
 local servers = {
   -- clangd = {},
   gopls = {},
-  -- pyright = {},
+  pyright = {},
   -- rust_analyzer = {},
   -- tsserver = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
