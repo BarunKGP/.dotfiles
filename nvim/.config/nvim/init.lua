@@ -176,54 +176,55 @@ require("lazy").setup({
     },
   },
 
-  {
-    "navarasu/onedark.nvim",
-    priority = 1000,
-    config = function()
-      require("onedark").setup({
-        -- Main options --
-        style = "light",              -- Default theme style. Choose between 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer' and 'light'
-        transparent = false,          -- Show/hide background
-        term_colors = true,           -- Change terminal color as per the selected theme style
-        ending_tildes = false,        -- Show the end-of-buffer tildes. By default they are hidden
-        cmp_itemkind_reverse = false, -- reverse item kind highlights in cmp menu
-
-        -- toggle theme style ---
-        toggle_style_key = "<leader>ct",                                                     -- keybind to toggle theme style. Leave it nil to disable it, or set it to a string, for example "<leader>ts"
-        toggle_style_list = { "dark", "darker", "cool", "deep", "warm", "warmer", "light" }, -- List of styles to toggle between
-
-        -- Change code style ---
-        -- Options are italic, bold, underline, none
-        -- You can configure multiple style with comma separated, For e.g., keywords = 'italic,bold'
-        code_style = {
-          comments = "italic",
-          keywords = "none",
-          functions = "none",
-          strings = "none",
-          variables = "none",
-        },
-
-        -- Lualine options --
-        lualine = {
-          transparent = false, -- lualine center bar transparencylet g
-        },
-
-        -- Custom Highlights --
-        colors = {},     -- Override default colors
-        highlights = {}, -- Override highlight groups
-
-        -- Plugins Config --
-        diagnostics = {
-          darker = true,     -- darker colors for diagnostic
-          undercurl = true,  -- use undercurl instead of underline for diagnostics
-          background = true, -- use background color for virtual text
-        },
-      })
-      require("onedark").load()
-      vim.cmd.colorscheme("onedark")
-    end,
-  },
-
+  -- {
+  --   "navarasu/onedark.nvim",
+  --   priority = 1000,
+  --   config = function()
+  --     require("onedark").setup({
+  --       -- Main options --
+  --       style = "light",              -- Default theme style. Choose between 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer' and 'light'
+  --       transparent = false,          -- Show/hide background
+  --       term_colors = true,           -- Change terminal color as per the selected theme style
+  --       ending_tildes = false,        -- Show the end-of-buffer tildes. By default they are hidden
+  --       cmp_itemkind_reverse = false, -- reverse item kind highlights in cmp menu
+  --
+  --       -- toggle theme style ---
+  --       toggle_style_key = "<leader>ct",                                                     -- keybind to toggle theme style. Leave it nil to disable it, or set it to a string, for example "<leader>ts"
+  --       toggle_style_list = { "dark", "darker", "cool", "deep", "warm", "warmer", "light" }, -- List of styles to toggle between
+  --
+  --       -- Change code style ---
+  --       -- Options are italic, bold, underline, none
+  --       -- You can configure multiple style with comma separated, For e.g., keywords = 'italic,bold'
+  --       code_style = {
+  --         comments = "italic",
+  --         keywords = "none",
+  --         functions = "none",
+  --         strings = "none",
+  --         variables = "none",
+  --       },
+  --
+  --       -- Lualine options --
+  --       lualine = {
+  --         transparent = false, -- lualine center bar transparencylet g
+  --       },
+  --
+  --       -- Custom Highlights --
+  --       colors = {},     -- Override default colors
+  --       highlights = {}, -- Override highlight groups
+  --
+  --       -- Plugins Config --
+  --       diagnostics = {
+  --         darker = true,     -- darker colors for diagnostic
+  --         undercurl = true,  -- use undercurl instead of underline for diagnostics
+  --         background = true, -- use background color for virtual text
+  --       },
+  --     })
+  --
+  --     -- toquire("onedark").load()
+  --     vim.cmd.colorscheme("onedark")
+  --   end,
+  -- },
+  --
   --   -- Theme inspired by Atom
   --   'kepano/flexoki-neovim',
   --   priority = 1000,
@@ -291,7 +292,7 @@ require("lazy").setup({
     "mawkler/modicator.nvim",
     -- dependencies = 'kepano/flexoki-neovim', -- Add your colorscheme plugin here
     -- dependencies = 'rose-pine/neovim', -- Add your colorscheme plugin here
-    dependencies = "mawkler/onedark.nvim", -- Add your colorscheme plugin here
+    dependencies = "navarasu/onedark.nvim", -- Add your colorscheme plugin here
     init = function()
       -- These are required for Modicator to work
       vim.o.cursorline = true
@@ -310,7 +311,10 @@ require("lazy").setup({
   -- Themes
   -- { 'kepano/flexoki-neovim',  name = 'flexoki' },
   -- { 'rose-pine/neovim',  name = 'rose-pine' },
+  { "navarasu/onedark.nvim",  name = "onedark" },
 
+  -- Configure theme: onedark
+  -- require("onedark").load()(
   -- {
   --   'numToStr/Comment.nvim',
   --   opts = {}
@@ -329,7 +333,7 @@ require("lazy").setup({
   --
   --
   --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-  { import = "custom.plugins" },
+    { import = "custom.plugins" }
 })
 
 -- [[ Setting options ]]
@@ -413,9 +417,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   group = highlight_group,
   pattern = "*",
 })
-
--- Configure theme: onedark
--- require('onedark').load()
 
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
