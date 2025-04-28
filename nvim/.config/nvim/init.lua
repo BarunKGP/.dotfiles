@@ -1,43 +1,3 @@
---[[
-
-=====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
-=====================================================================
-
-Kickstart.nvim is *not* a distribution.
-
-Kickstart.nvim is a template for your own configuration.
-  The goal is that you can read every line of code, top-to-bottom, understand
-  what your configuration is doing, and modify it to suit your needs.
-
-  Once you've done that, you should start exploring, configuring and tinkering to
-  explore Neovim!
-
-  If you don't know anything about Lua, I recommend taking some time to read through
-  a guide. One possible example:
-  - https://learnxinyminutes.com/docs/lua/
-
-
-  And then you can explore or search through `:help lua-guide`
-  - https://neovim.io/doc/user/lua-guide.html
-
-
-Kickstart Guide:
-
-I have left several `:help X` comments throughout the init.lua
-You should run that command and read that help section for more information.
-
-In addition, I have some `NOTE:` items throughout the file.
-These are for you, the reader to help understand what is happening. Feel free to delete
-them once you know what you're doing, but they should serve as a guide for when you
-are first encountering a few different constructs in your nvim config.
-
-I hope you enjoy your Neovim journey,
-- TJ
-
-P.S. You can delete this when you're done too. It's your config now :)
---]]
-
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
@@ -65,14 +25,7 @@ vim.opt.tabstop = 4
 -- vim.opt.expandtab = 2
 
 -- [[ Configure plugins ]]
--- NOTE: Here is where you install your plugins.
---  You can configure plugins using the `config` key.
---
---  You can also configure plugins after the setup call,
---    as they will be available in your neovim runtime.
 require("lazy").setup({
-  -- NOTE: First, some plugins that don't require any configuration
-
   -- Git related plugins
   "tpope/vim-fugitive",
   "tpope/vim-rhubarb",
@@ -81,7 +34,6 @@ require("lazy").setup({
   "tpope/vim-sleuth",
 
   -- NOTE: This is where your plugins related to LSP can be installed.
-  --  The configuration is done below. Search for lspconfig to find it below.
   {
     -- LSP Configuration & Plugins
     "neovim/nvim-lspconfig",
@@ -115,6 +67,7 @@ require("lazy").setup({
     },
   },
 
+  -- Teleport across the document
   {
     "folke/flash.nvim",
     event = "VeryLazy",
@@ -176,63 +129,6 @@ require("lazy").setup({
     },
   },
 
-  -- {
-  --   "navarasu/onedark.nvim",
-  --   priority = 1000,
-  --   config = function()
-  --     require("onedark").setup({
-  --       -- Main options --
-  --       style = "light",              -- Default theme style. Choose between 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer' and 'light'
-  --       transparent = false,          -- Show/hide background
-  --       term_colors = true,           -- Change terminal color as per the selected theme style
-  --       ending_tildes = false,        -- Show the end-of-buffer tildes. By default they are hidden
-  --       cmp_itemkind_reverse = false, -- reverse item kind highlights in cmp menu
-  --
-  --       -- toggle theme style ---
-  --       toggle_style_key = "<leader>ct",                                                     -- keybind to toggle theme style. Leave it nil to disable it, or set it to a string, for example "<leader>ts"
-  --       toggle_style_list = { "dark", "darker", "cool", "deep", "warm", "warmer", "light" }, -- List of styles to toggle between
-  --
-  --       -- Change code style ---
-  --       -- Options are italic, bold, underline, none
-  --       -- You can configure multiple style with comma separated, For e.g., keywords = 'italic,bold'
-  --       code_style = {
-  --         comments = "italic",
-  --         keywords = "none",
-  --         functions = "none",
-  --         strings = "none",
-  --         variables = "none",
-  --       },
-  --
-  --       -- Lualine options --
-  --       lualine = {
-  --         transparent = false, -- lualine center bar transparencylet g
-  --       },
-  --
-  --       -- Custom Highlights --
-  --       colors = {},     -- Override default colors
-  --       highlights = {}, -- Override highlight groups
-  --
-  --       -- Plugins Config --
-  --       diagnostics = {
-  --         darker = true,     -- darker colors for diagnostic
-  --         undercurl = true,  -- use undercurl instead of underline for diagnostics
-  --         background = true, -- use background color for virtual text
-  --       },
-  --     })
-  --
-  --     -- toquire("onedark").load()
-  --     vim.cmd.colorscheme("onedark")
-  --   end,
-  -- },
-  --
-  --   -- Theme inspired by Atom
-  --   'kepano/flexoki-neovim',
-  --   priority = 1000,
-  --   config = function()
-  --     vim.cmd.colorscheme 'flexoki-dark'
-  --   end,
-  -- },
-  --
   {
     -- Set lualine as statusline
     "nvim-lualine/lualine.nvim",
@@ -313,31 +209,10 @@ require("lazy").setup({
   -- { 'rose-pine/neovim',  name = 'rose-pine' },
   { "navarasu/onedark.nvim",  name = "onedark" },
 
-  -- Configure theme: onedark
-  -- require("onedark").load()(
-  -- {
-  --   'numToStr/Comment.nvim',
-  --   opts = {}
-  -- },
-
-  -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
-  --       These are some example plugins that I've included in the kickstart repository.
-  --       Uncomment any of the lines below to enable them.
-  -- require("kickstart.plugins.autoformat"),
-  -- require 'kickstart.plugins.debug',
-
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
-  --    up-to-date with whatever is in the kickstart repo.
-  --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  --
-  --
-  --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-    { import = "custom.plugins" }
+  { import = "custom.plugins" },
 })
 
 -- [[ Setting options ]]
--- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
 
 -- Set highlight on search
