@@ -59,3 +59,14 @@ espanso is a text expander based on YAML, which I use to store frequently used s
 - You can also copy the config files from `espanso/config/` to `ESPANSO_PATH/config`
 - Restart espanso to load your new matchers: `espanso restart`
 	- NOTE: This command should be run on the host system where you installed espanso. If you have espanso on Windows and are using WSL to setup dotfiles, this command needs to be run on the Windows system itself.
+
+## Replicating dotfiles with GNU stow
+GNU stow is a symlink manager that will handle replicating these dotfiles on any machine.
+This repo structure is similar to the required configuration desired by these packages.
+You can simply add them to your system by running:
+
+```sh
+stow package -d /path/to/.dotfiles -t $HOME
+```
+
+After stowing, simply quit and restart your shell or source the updated files for changes to take effect (typically this involves a `source ~/.[bash/zsh/]rc` and `prefix + I` to reload tmux plugins)
