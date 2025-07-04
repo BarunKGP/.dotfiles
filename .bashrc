@@ -112,6 +112,12 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
+# Source env variables: .bash_env is a local file excluded from Github
+# Use this to store API keys if needed (NOTE: not recommended but works)
+if [ -f ~/.bash_env ]; then
+    . ~/.bash_env
+fi
+
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
