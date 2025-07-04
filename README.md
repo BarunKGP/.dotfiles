@@ -2,14 +2,26 @@
 This repo contains scripts that help with dotfile management and organization across a variety of my workspaces.
 
  ## Clone locally
- On a new machine, reproduce this using git:
+ Clone this repo on a new machine:
     ```git clone https://github.com/BarunKGP/dotfiles.git```
 
-This fetches all dotfiles.
-Ideally you would have [GNU stow](https://www.gnu.org/software/stow/) as well to set up symlinks automatically.
-If not, there are a few helper scripts to set things up
-   
-## Setting up Neovim as an IDE
+It is recommended to have [GNU stow](https://www.gnu.org/software/stow/) on your system to proceed as it simplifies symlink management.
+
+
+# Setup Steps
+This repo contains configurations for:
+- tmux
+- Neovim
+- espanso
+
+## tmux
+**tmux** is a lightweight, extensible terminal multiplexer that easily allows you to switch between diferent programs in one terminal.
+It also has a rich plugin ecosystem and can be configured to auto-save and restore running sessions across reboots.
+These features make **tmux** an important tool in any terminal-based developer workflow. 
+
+Install **tmux** according to the [instructions for your system](https://github.com/tmux/tmux/wiki/Installing) on your system. 
+
+## Neovim
 Most server environments I work on are painfully old (some don't even have Git 2.0!)
 In such cases, it is best to use an `nvim.appimage` to keep things lightweight and portable.
 You can always install the fully decked out version of Neovim if you so choose.
@@ -25,16 +37,8 @@ The script is set to use bash but you could edit the first line to reflect the s
 It installs the `nvim.appimage`, makes it an executable and pulls in the config files from `kickstart.nvim`.
 This also sets up the `$HOME/.config/nvim` directory separately which is needed if you aren't using stow.
 It also sets an alias for `nvim` so that you can use Neovim as usual by calling `nvim <dir/file>`
-   
----
-   
-## Other setup actions
-This repo contains configurations for:
-- tmux
-- Neovim
-- espanso
 
-### Espanso
+## Espanso (optional)
 espanso is a text expander based on YAML, which I use to store frequently used snippets such as emails, personal information, (names, addresses, phone numbers), etc., which I can then quickly populate in any new machine.
 
 #### Steps:
@@ -46,7 +50,7 @@ espanso is a text expander based on YAML, which I use to store frequently used s
 
 #### NOTE: 
 1. You should not store passwords and secrets in espanso. Do not treat it as a security solution. 
-2. If you do store any sensitive information on your local config (not recommended), make sure they are ignored during backup. Any passwords and tokens will be detected by Github and the push will fail.
+2. If you do store any sensitive information on your local config (not recommended), make sure they are ignored during backup. Github will block pushing sensitive information like passwords and tokens.
 
 #### Restoring espanso matchers
 - Ensure you have the `ESPANSO_PATH` environment variable set up pointing to the `match` directory
@@ -55,3 +59,14 @@ espanso is a text expander based on YAML, which I use to store frequently used s
 - You can also copy the config files from `espanso/config/` to `ESPANSO_PATH/config`
 - Restart espanso to load your new matchers: `espanso restart`
 	- NOTE: This command should be run on the host system where you installed espanso. If you have espanso on Windows and are using WSL to setup dotfiles, this command needs to be run on the Windows system itself.
+
+## Replicating dotfiles with GNU stow
+GNU stow is a symlink manager that will handle replicating these dotfiles on any machine.
+This repo structure is similar to the required configuration desired by these packages.
+You can simply add them to your system by running:
+
+```sh
+stow package -d /path/to/.dotfiles -t $HOME
+```
+
+After stowing, simply quit and restart your shell or source the updated files for changes to take effect (typically this involves a `source ~/.[bash/zsh/]rc` and `prefix + I` to reload tmux plugins)

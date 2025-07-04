@@ -1,3 +1,12 @@
+:'
+This script enables sharing SSH credentials between Windwows and WSL
+when used on the same machine, standardizing things such as Git access
+across platforms.
+
+NOTE: Do not use this for sharing SSH keys unless they belong to the same
+user on the same machine.
+'
+
 #!/bin/bash
 
 # Location to store agent environment
