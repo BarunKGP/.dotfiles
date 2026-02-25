@@ -47,6 +47,7 @@ echo "Location: $DOTFILES"
 echo "OS: $OS"
 echo "Minimal mode: $MINIMAL"
 echo ""
+echo "Detecting available shells..."
 
 # Check for GNU stow
 if ! command -v stow >/dev/null 2>&1; then
@@ -72,9 +73,33 @@ stow_package() {
     stow "$pkg" -d "$DOTFILES" -t "$HOME" --restow
 }
 
+# Shell detection
+detect_shells() {
+    local shells=()
+    if command -v bash >/dev/null 2>&1; then
+        shells+=("bash")
+    fi
+    if command -v zsh >/dev/null 2>&1; then
+        shells+=("zsh")
+    fi
+    echo "${shells[@]}"
+}
+
+AVAILABLE_SHELLS=$(detect_shells)
+
+# Check if at least one shell is available
+if [ -z "$AVAILABLE_SHELLS" ]; then
+    echo "ERROR: Neither bash nor zsh found on this system."
+    echo "At least one shell is required to use these dotfiles."
+    exit 1
+fi
+
 echo "Installing packages with stow..."
-stow_package "bash"
-stow_package "zsh"
+echo "Available shells: $AVAILABLE_SHELLS"
+for shell in $AVAILABLE_SHELLS; do
+    stow_package "$shell"
+done
+
 stow_package "git"
 
 if [ "$MINIMAL" = false ]; then
