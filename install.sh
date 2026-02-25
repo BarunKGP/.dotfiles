@@ -40,6 +40,9 @@ detect_os() {
 
 OS=$(detect_os)
 
+# XDG Base Directory Specification
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+
 echo "================================================"
 echo "  Dotfiles Installation"
 echo "================================================"
@@ -110,7 +113,7 @@ fi
 echo ""
 
 # Create local shell config if it doesn't exist
-LOCAL_CONFIG="$HOME/.config/shell/local.sh"
+LOCAL_CONFIG="$XDG_CONFIG_HOME/shell/local.sh"
 if [ ! -f "$LOCAL_CONFIG" ]; then
     mkdir -p "$(dirname "$LOCAL_CONFIG")"
 
