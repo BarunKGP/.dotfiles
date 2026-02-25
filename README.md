@@ -1,21 +1,93 @@
 # Dotfile management and organization
 
-This repo contains scripts that help with dotfile management and organization across a variety of my workspaces.
+This repo contains configurations for bash, zsh, tmux, neovim, git, and espanso, designed to be portable across WSL2, macOS, and Linux environments.
 
-## Clone locally
+## Quick Start
 
 Clone this repo on a new machine:
-`git clone https://github.com/BarunKGP/dotfiles.git`
+```sh
+git clone https://github.com/BarunKGP/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
+./install.sh
+```
 
-It is recommended to have [GNU stow](https://www.gnu.org/software/stow/) on your system to proceed as it simplifies symlink management.
+The `install.sh` script will:
+- Detect your OS (WSL2, macOS, or Linux)
+- Check for [GNU stow](https://www.gnu.org/software/stow/) (required)
+- Symlink all packages to your home directory
+- Create a machine-local config file for environment-specific settings
 
-## Setup Steps
+After installation, edit `~/.config/shell/local.sh` to add machine-specific configuration (API keys, Windows paths for WSL2, etc.).
 
-This repo contains configurations for:
+## Architecture
 
-- tmux
-- Neovim
-- espanso
+### Shell Configuration (Bash & Zsh)
+
+The shell configuration is modularized and portable across all supported platforms:
+
+- **`bash/.bashrc`** and **`zsh/.zshrc`**: Thin loaders that source modules
+- **`shell/common/`**: Cross-platform modules (aliases, functions, path, tools)
+- **`shell/bash/`** and **`shell/zsh/`**: Shell-specific options and completions
+- **`shell/common/os/`**: OS-specific configuration (wsl2.sh, macos.sh, linux.sh)
+- **`~/.config/shell/local.sh`**: Machine-local overrides (not tracked in git)
+
+**Key Features:**
+- Automatic OS detection (WSL2, macOS, Linux)
+- Shared aliases and functions between bash and zsh
+- Environment-specific settings loaded from `~/.config/shell/local.sh`
+- Support for multiple dev environments (devcontainers, remote servers, local machines)
+
+### Other Configurations
+
+This repo also contains configurations for:
+
+- **tmux**: Terminal multiplexer with plugins and theming
+- **neovim**: Modern text editor with LSP support
+- **git**: Global git configuration and aliases
+- **espanso**: Text expansion snippets (optional)
+
+## Setup
+
+### Standard Installation
+
+```sh
+./install.sh
+```
+
+For minimal setup (useful in devcontainers or minimal environments):
+```sh
+./install.sh --minimal
+```
+
+### Manual Installation
+
+If you prefer to stow packages individually:
+
+```sh
+stow bash zsh nvim tmux git -d /path/to/.dotfiles -t $HOME
+```
+
+### Machine-Local Configuration
+
+After installation, edit `~/.config/shell/local.sh`:
+
+- **API keys**: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`
+- **WSL2-specific**: `WINDOWS_USER`, `ESPANSO_PATH`, `OBSIDIAN_VAULT`, `NVIM_PATH`, `GECKODRIVER_PATH`
+- **Custom aliases/functions**: Add any machine-specific shell customizations
+
+### Shell-Specific Setup
+
+#### Bash
+
+```bash
+source ~/.bashrc
+```
+
+#### Zsh
+
+```zsh
+source ~/.zshrc
+```
 
 ### tmux
 
@@ -25,62 +97,97 @@ These features make **tmux** an important tool in any terminal-based developer w
 
 Install **tmux** according to the [instructions for your system](https://github.com/tmux/tmux/wiki/Installing) on your system.
 
-### Neovim
+#### Neovim
 
-Most server environments I work on are painfully old (some don't even have Git 2.0!)
-In such cases, it is best to use an `nvim.appimage` to keep things lightweight and portable.
-You can always install the fully decked out version of Neovim if you so choose.
+Neovim is configured via kickstart.nvim (Lua-based). The config is automatically stowed to `~/.config/nvim`.
 
-#### Setting up helper scripts
+To install Neovim:
+- **macOS**: `brew install neovim` or use `setup_nvim.sh` for the appimage
+- **Linux/WSL2**: Use `setup_nvim.sh` to download the portable appimage, or install via your package manager
+- **devcontainers**: `apt install neovim` or use the appimage
 
-After cloning this repo, run the `setup_nvim.sh` helper script using
+Plugin management uses `lazy.nvim`. After starting Neovim, plugins are auto-installed.
 
-```sh chmod +x setup_nvim.sh
-./setup_nvim.sh
+Optional: Run `scripts/setup_nvim.sh` to download the `nvim.appimage` (portable version).
 
-```
+#### Git
 
-The script is set to use bash but you could edit the first line to reflect the shell of your choice.
-(I have to keep switching between bash, ksh).
-It installs the `nvim.appimage`, makes it an executable and pulls in the config files from `kickstart.nvim`.
-This also sets up the `$HOME/.config/nvim` directory separately which is needed if you aren't using stow.
-It also sets an alias for `nvim` so that you can use Neovim as usual by calling `nvim <dir/file>`
-
-### Espanso (optional)
-
-espanso is a text expander based on YAML, which I use to store frequently used snippets such as emails, personal information, (names, addresses, phone numbers), etc., which I can then quickly populate in any new machine.
-
-##### Steps
-
-1. Install [espanso](https://espanso.org/docs/get-started/) for your system.
-1. Pull these stored snippets and configurations.
-1. Move the `espanso` folder to the \[<https://espanso.org/docs/get-started/##configuration%5C>\](location expected by espanso). Alternatively, you could explore how the edit the location where espanso looks for configs and matches, and then you can store this folder wherever you choose.
-1. Reload the espanso config if needed. You should now be ready to use these snippets on your system
-
-______________________________________________________________________
-
-> [!NOTE]
->
-> 1. You should not store passwords and secrets in espanso. Do not treat it as a security solution.
-> 1. If you do store any sensitive information on your local config (not recommended), make sure they are ignored during backup. Github will block pushing sensitive information like passwords and tokens.
-
-##### Restoring espanso matchers
-
-- Ensure you have the `ESPANSO_PATH` environment variable set up pointing to the `match` directory
-- Copy the matcher files from `espanso/match/` to `$ESPANSO_PATH/match`
-  - This may overwrite existing matchers. Make sure you create a backup for your existing matchers
-- You can also copy the config files from `espanso/config/` to `ESPANSO_PATH/config`
-- Restart espanso to load your new matchers: `espanso restart`
-  - NOTE: This command should be run on the host system where you installed espanso. If you have espanso on Windows and are using WSL to setup dotfiles, this command needs to be run on the Windows system itself.
-
-## Replicating dotfiles with GNU stow
-
-GNU stow is a symlink manager that will handle replicating these dotfiles on any machine.
-This repo structure is similar to the required configuration desired by these packages.
-You can simply add them to your system by running:
+Global git configuration is stowed to `~/.gitconfig`. Set your user identity once:
 
 ```sh
-stow package -d /path/to/.dotfiles -t $HOME
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
 ```
 
-After stowing, simply quit and restart your shell or source the updated files for changes to take effect (typically this involves a `source ~/.[bash/zsh/]rc` and `prefix + I` to reload tmux plugins)
+#### Espanso (optional)
+
+espanso is a text expander for frequently used snippets. The tracked files only contain templates; actual sensitive data is gitignored.
+
+**Setup:**
+1. Install [espanso](https://espanso.org/docs/get-started/) for your system
+2. Copy espanso config files to the espanso config directory:
+   ```sh
+   cp espanso/config/default.yml ~/.config/espanso/  # or Windows AppData equivalent
+   ```
+3. Set up match files from templates:
+   ```sh
+   cp espanso/match/base.example.yml ~/.config/espanso/match/base.yml
+   cp espanso/match/emory.example.yml ~/.config/espanso/match/emory.yml  # if needed
+   ```
+4. Edit the match files to add your actual values (API keys, email addresses, paths)
+5. Restart espanso: `espanso restart`
+
+> [!WARNING]
+>
+> The `espanso/match/base.yml` and `espanso/match/emory.yml` files are **gitignored** for security.
+> Never commit passwords, credentials, or personal information. The `.example.yml` files serve as templates.
+
+---
+
+## OS-Specific Notes
+
+### WSL2
+
+- SSH agent is automatically configured to bridge Windows ↔ WSL credentials
+- Configure Windows paths in `~/.config/shell/local.sh`:
+  ```bash
+  export WINDOWS_USER="/mnt/c/Users/YourUsername"
+  export ESPANSO_PATH="$WINDOWS_USER/AppData/Roaming/espanso/dawstored"
+  export OBSIDIAN_VAULT="$WINDOWS_USER/Documents/Obsidian/obsidian-vaults/VaultName"
+  ```
+
+### macOS
+
+- Homebrew is auto-detected and configured
+- zsh is the default shell; both bash and zsh are supported
+
+### Linux / Devcontainers
+
+- Minimal setup with `./install.sh --minimal` installs only shell and git configs
+- Full setup can be run in devcontainers but may not need tmux/nvim
+
+---
+
+## Troubleshooting
+
+**Shell not loading modules:**
+- Check that `$DOTFILES` is correctly set: `echo $DOTFILES`
+- Verify `~/.config/shell/local.sh` exists and is readable
+- Test sourcing manually: `. ~/.bashrc`
+
+**Stow conflicts:**
+- Check for existing symlinks: `ls -la ~/ | grep "\->"`
+- Remove old symlinks before stowing: `rm ~/.bashrc ~/.zshrc ~/.tmux.conf`
+- Use `stow --restow` to replace existing links
+
+**macOS zsh issues:**
+- macOS Catalina+ defaults to zsh; ensure `~/.zshrc` is sourced
+- Add `~/.zshrc` to zsh startup if needed: `echo 'source ~/.zshrc' >> ~/.zprofile`
+
+---
+
+## GNU Stow
+
+This repo uses [GNU stow](https://www.gnu.org/software/stow/) for managing dotfiles. Each package
+(bash, zsh, nvim, tmux, git) is structured as a stow directory and gets symlinked to your home
+directory on installation.

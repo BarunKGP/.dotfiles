@@ -1,1 +1,9 @@
 *localignore*
+
+# Machine-local shell configuration (secrets, API keys, machine-specific paths)
+.config/shell/local.sh
+shell/local.sh
+
+# Espanso sensitive match files (contain passwords and personal info)
+espanso/match/base.yml
+espanso/match/emory.yml

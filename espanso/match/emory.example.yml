@@ -1,0 +1,29 @@
+# espanso match file - EMORY (institution-specific, example/template)
+# This file contains institution-specific matches (sensitive credentials removed)
+# Copy this to emory.yml and fill in your actual values
+
+# For Emory University / research lab environment
+# NOTE: DO NOT commit passwords or credentials to version control
+
+matches:
+  # Lab/institution credentials (CHANGE THESE!)
+  - trigger: ":oddbmi"
+    replace: "REPLACE_WITH_YOUR_PASSWORD"
+
+  # Lab data paths
+  - trigger: ":cfd/data"
+    replace: "/labs/yourlab/data/cfd/study-name"
+
+  # Test environment (CHANGE THESE!)
+  - trigger: ":pipwd"
+    replace: "REPLACE_WITH_YOUR_TEST_PASSWORD"
+
+  # Add your institution-specific snippets here:
+  # - trigger: ":org"
+  #   replace: "Your Institution Name"
+  #
+  # - trigger: ":lab"
+  #   replace: "Your Lab Name"
+  #
+  # - trigger: ":advisor"
+  #   replace: "Advisor Name"

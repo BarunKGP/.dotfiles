@@ -1,0 +1,35 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+*.swp
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Linux
+.directory
+
+# Editor swap files
+*.swp
+*.swo
+*~
+.swp
+.*.swp
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# Environment files (local secrets)
+.env
+.env.local
+.env.*.local
+
+# OS temp files
+*.tmp
+.cache/
