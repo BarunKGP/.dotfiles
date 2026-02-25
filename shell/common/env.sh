@@ -14,6 +14,9 @@ _detect_os() {
 export OS_TYPE="${OS_TYPE:-$(_detect_os)}"
 unset -f _detect_os
 
+# XDG Base Directory Specification
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+
 # Go paths
 export GOROOT="/usr/local/go"
 export GOPATH="$HOME/go"
