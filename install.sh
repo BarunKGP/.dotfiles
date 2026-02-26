@@ -71,6 +71,18 @@ echo "OS: $OS"
 echo "Minimal mode: $MINIMAL"
 echo ""
 
+# Ensure all critical scripts have executable permissions
+# (git sometimes doesn't preserve permissions across clones/filesystems)
+ensure_executable() {
+    local script="$1"
+    if [ -f "$script" ] && [ ! -x "$script" ]; then
+        chmod +x "$script"
+    fi
+}
+
+ensure_executable "$DOTFILES/scripts/install-packages.sh"
+ensure_executable "$DOTFILES/scripts/packages/espanso.sh"
+
 # Install packages from packages.conf if enabled
 if [ "$NO_PACKAGES" = false ]; then
     echo "Installing packages from packages.conf..."
@@ -173,7 +185,7 @@ fi
 # Set zsh as default shell if available
 if command -v zsh >/dev/null 2>&1; then
     echo ""
-    set_default_shell "zsh"
+    set_default_shell "zsh" || true
 fi
 
 echo ""

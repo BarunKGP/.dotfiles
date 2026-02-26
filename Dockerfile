@@ -1,7 +1,10 @@
 FROM alpine:latest
 
-# Install required packages for bootstrapping dotfiles
-# zsh, neovim, tmux are now installed by dotfiles via packages.conf
+ARG DOTFILES_REPO=https://github.com/BarunKGP/.dotfiles.git
+ARG DOTFILES_BRANCH=main
+ARG INSTALL_FLAGS=--skip-optional
+
+# Bootstrap: only what's needed before install.sh runs
 RUN apk add --no-cache \
     openssh \
     openssh-client \
@@ -11,53 +14,53 @@ RUN apk add --no-cache \
     curl \
     vim \
     util-linux \
-    sudo
+    sudo \
+    shadow
 
-# Create a non-root user for testing with password "test" and bash as default shell
+# Create testuser (bash as initial shell — zsh installed by dotfiles)
 RUN addgroup -g 1000 testuser && \
     adduser -D -u 1000 -G testuser -s /bin/bash testuser && \
     echo "testuser:test" | chpasswd
 
-# Grant testuser passwordless sudo for apk (minimal privilege for package installation)
+# Passwordless sudo for apk (package install) and usermod (shell change)
 RUN mkdir -p /etc/sudoers.d && \
-    echo "testuser ALL=(root) NOPASSWD: /sbin/apk" >> /etc/sudoers.d/testuser && \
+    echo "testuser ALL=(root) NOPASSWD: /sbin/apk, /usr/sbin/usermod" \
+        >> /etc/sudoers.d/testuser && \
     chmod 0440 /etc/sudoers.d/testuser
 
-# Set up SSH
+# Clone and install dotfiles as testuser
+RUN mkdir -p /home/testuser && chown -R testuser:testuser /home/testuser
+USER testuser
+ENV HOME=/home/testuser
+RUN git clone --branch ${DOTFILES_BRANCH} ${DOTFILES_REPO} ${HOME}/.dotfiles
+RUN cd ${HOME}/.dotfiles && ./install.sh ${INSTALL_FLAGS}
+
+# Set zsh as default shell now that it's installed (bypasses PAM, no chsh needed)
+USER root
+RUN if command -v zsh >/dev/null 2>&1; then \
+        usermod -s "$(command -v zsh)" testuser; \
+    fi
+
+# SSH setup
 RUN ssh-keygen -A && \
     mkdir -p /home/testuser/.ssh && \
-    chmod 700 /home/testuser/.ssh
+    chmod 700 /home/testuser/.ssh && \
+    chown -R testuser:testuser /home/testuser/.ssh
 
-# Allow SSH login with password (for easy testing)
+# Enable password auth (Alpine sshd_config defaults allow it, but be explicit)
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config && \
     sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config && \
-    sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+    echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
 
-# Create entrypoint script
-RUN mkdir -p /home/testuser && chown -R testuser:testuser /home/testuser
-
-# Display helpful info
 RUN cat > /etc/motd << 'EOF'
-Welcome to Alpine Linux Dotfiles Test Container!
+Alpine Linux Dotfiles Container — ready to code.
 
-To test the dotfiles installation:
-1. Clone the repository: git clone https://github.com/BarunKGP/.dotfiles.git ~/.dotfiles
-2. Or: git clone --branch feat/modularize https://github.com/BarunKGP/.dotfiles.git ~/.dotfiles
-3. Navigate: cd ~/.dotfiles
-4. Run installer: ./install.sh
-5. Reload shell: exec $SHELL
+SSH credentials: testuser / test
+Default shell:   zsh (with dotfiles pre-installed)
 
-Installation flags:
-  ./install.sh --minimal      # Skip nvim/tmux (fast for devcontainers)
-  ./install.sh --no-packages  # Manual package management, only stow dotfiles
-  ./install.sh --skip-optional # Skip optional packages like espanso
-
-Note: zsh, neovim, and tmux are now installed by dotfiles via packages.conf
-
-SSH Credentials: testuser / test
+To rebuild fresh:
+  docker-compose down && docker-compose up -d --build
 EOF
 
-# Start SSH server
 CMD ["/usr/sbin/sshd", "-D", "-e"]
-
 EXPOSE 22

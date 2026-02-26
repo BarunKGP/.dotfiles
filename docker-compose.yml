@@ -3,31 +3,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        DOTFILES_REPO: https://github.com/BarunKGP/.dotfiles.git
+        DOTFILES_BRANCH: main
+        INSTALL_FLAGS: --skip-optional
     container_name: alpine-dotfiles-test
     ports:
       - "2222:22"
     environment:
       - TERM=xterm-256color
-    volumes:
-      - dotfiles-home:/home/testuser
     stdin_open: true
     tty: true
-    cap_add:
-      - SYS_CHROOT
     networks:
       - dotfiles-test
-
-  # Optional: SSH helper service to generate keys
-  ssh-keygen:
-    image: alpine:latest
-    entrypoint: /bin/sh
-    command: -c "apk add --no-cache openssh-keygen && ssh-keygen -t ed25519 -f /tmp/id_ed25519 -N '' && cat /tmp/id_ed25519.pub"
-    volumes:
-      - ssh-keys:/tmp
-
-volumes:
-  dotfiles-home:
-  ssh-keys:
 
 networks:
   dotfiles-test:
