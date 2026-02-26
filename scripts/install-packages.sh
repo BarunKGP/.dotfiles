@@ -193,11 +193,17 @@ install_packages() {
                     echo "⊘  [skip] $canonical (group: $group, skipped with --skip-optional)"
                     continue
                 fi
-                # Prompt user for optional packages
-                read -p "Install $canonical? [y/N] " -n 1 -r response
-                echo
-                if [[ ! $response =~ ^[Yy]$ ]]; then
-                    echo "⊘  [skip] $canonical (declined by user)"
+                # Prompt user for optional packages (only if stdin is a TTY)
+                if [ -t 0 ]; then
+                    read -p "Install $canonical? [y/N] " -n 1 -r response
+                    echo
+                    if [[ ! $response =~ ^[Yy]$ ]]; then
+                        echo "⊘  [skip] $canonical (declined by user)"
+                        continue
+                    fi
+                else
+                    # Non-interactive environment: skip optional packages
+                    echo "⊘  [skip] $canonical (non-interactive mode; use --skip-optional or pass --help for options)"
                     continue
                 fi
                 ;;
