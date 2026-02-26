@@ -27,7 +27,8 @@ _src "$DOTFILES/shell/common/aliases.sh"      # Common aliases
 _src "$DOTFILES/shell/common/functions.sh"    # Common functions
 _src "$DOTFILES/shell/common/os/$OS_TYPE.sh"  # OS-specific configuration
 _src "$DOTFILES/shell/bash/completion.sh"     # Bash completion
-_src "$DOTFILES/shell/common/tools.sh"        # Tool initializations (nvm, pyenv, zoxide, etc.)
+# WARN:Ignoring tools for now because they are not being installed - figure out how to handle later
+# _src "$DOTFILES/shell/common/tools.sh"        # Tool initializations (nvm, pyenv, zoxide, etc.)
 _src "$HOME/.config/shell/local.sh"           # Machine-local overrides (not tracked in git)
 
 unset -f _src
