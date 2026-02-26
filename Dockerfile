@@ -33,7 +33,7 @@ RUN mkdir -p /home/testuser && chown -R testuser:testuser /home/testuser
 USER testuser
 ENV HOME=/home/testuser
 RUN git clone --branch ${DOTFILES_BRANCH} ${DOTFILES_REPO} ${HOME}/.dotfiles
-RUN cd ${HOME}/.dotfiles && ./install.sh ${INSTALL_FLAGS}
+RUN cd ${HOME}/.dotfiles && chmod +x install.sh && bash ./install.sh ${INSTALL_FLAGS}
 
 # Set zsh as default shell now that it's installed (bypasses PAM, no chsh needed)
 USER root

@@ -176,9 +176,10 @@ for shell in $AVAILABLE_SHELLS; do
 done
 
 stow_package "git"
+stow_package "nvim"
 
 if [ "$MINIMAL" = false ]; then
-    stow_package "nvim"
+    stow_package "zsh"
     stow_package "tmux"
 fi
 
