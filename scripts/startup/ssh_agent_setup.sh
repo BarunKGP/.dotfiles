@@ -16,7 +16,10 @@ AGENT_ENV="$HOME/.ssh/agent.env"
 start_agent() {
     echo "Starting a new ssh-agent..."
     eval "$(ssh-agent -s)" >/dev/null
-    ssh-add ~/.ssh/git_ed25519
+    # Only add key if it exists
+    if [ -f ~/.ssh/git_ed25519 ]; then
+        ssh-add ~/.ssh/git_ed25519
+    fi
     # Save environment variables
     echo "export SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >"$AGENT_ENV"
     echo "export SSH_AGENT_PID=$SSH_AGENT_PID" >>"$AGENT_ENV"
