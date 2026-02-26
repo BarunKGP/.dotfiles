@@ -179,10 +179,10 @@ install_packages() {
 
         # Check if package should be skipped based on group and flags
         case "$group" in
-            shell)
-                # shell group always installed
+            editor|util)
+                # editor and util groups always installed
                 ;;
-            editor|terminal)
+            shell|terminal)
                 if [ "$MINIMAL" = true ]; then
                     echo "⊘  [skip] $canonical (group: $group, skipped with --minimal)"
                     continue
