@@ -29,19 +29,28 @@ ssh -p 2222 testuser@localhost
 
 When prompted for password, use any password (the container allows password login for testing).
 
-### 3. Clone and Install Dotfiles
+### 3. Dotfiles Already Installed
 
-Inside the container:
+Dotfiles are automatically installed during container build using `dotctl install --skip-optional`.
+
+To verify the installation is complete:
 
 ```bash
-# Clone the feat/modularize branch (or main once merged)
-git clone --branch feat/modularize https://github.com/BarunKGP/.dotfiles.git ~/.dotfiles
+# Check that dotfiles are installed
+ls -la ~/.bashrc ~/.zshrc ~/.gitconfig  # Should be symlinks
 
-# Navigate to dotfiles
+# Verify dotctl is in PATH
+which dotctl
+
+# Check local config was created
+ls -la $XDG_CONFIG_HOME/shell/local.sh
+```
+
+To run dotctl again (e.g., with different flags):
+
+```bash
 cd ~/.dotfiles
-
-# Run the installer
-./install.sh
+dotctl install --help  # Show all options
 ```
 
 ### 4. Verify Installation
@@ -218,18 +227,34 @@ cat ~/.bashrc | head -5
 - **SSH**: Configured for password authentication for easy testing
 - **Home directory**: `/home/testuser` - shared via Docker volume for persistence
 
-## Full Testing Checklist
+## Full Testing Checklist (e2e Verification)
 
-- [ ] Container starts and SSH is accessible
-- [ ] Can clone dotfiles from feat/modularize branch
-- [ ] `./install.sh` runs without errors
-- [ ] Both bash and zsh detect as available
-- [ ] Stow creates symlinks for bash/, zsh/, git/
-- [ ] `~/.bashrc` and `~/.zshrc` source correctly
-- [ ] `XDG_CONFIG_HOME` is set to `~/.config`
-- [ ] Machine-local config file created at `$XDG_CONFIG_HOME/shell/local.sh`
-- [ ] Aliases work in bash (e.g., `ll` for `ls -alF`)
-- [ ] Aliases work in zsh
-- [ ] Can switch between bash and zsh
-- [ ] Custom aliases in local.sh load correctly
-- [ ] Git config is symlinked
+After `ssh -p 2222 testuser@localhost`:
+
+**Environment Setup**
+- [ ] `$OS_TYPE` = linux (test: `bash -i -c 'echo $OS_TYPE'`)
+- [ ] `$XDG_CONFIG_HOME` = /home/testuser/.config (test: `echo $XDG_CONFIG_HOME`)
+- [ ] `$HOME` = /home/testuser (test: `echo $HOME`)
+
+**Symlinks (Stow)**
+- [ ] `~/.bashrc` is a symlink to `~/.dotfiles/bash/.bashrc`
+- [ ] `~/.zshrc` is a symlink to `~/.dotfiles/zsh/.zshrc`
+- [ ] `~/.gitconfig` is a symlink to `~/.dotfiles/git/.gitconfig`
+- [ ] `~/.tmux.conf` is a symlink to `~/.dotfiles/tmux/.tmux.conf`
+
+**Shell Config & Aliases**
+- [ ] Aliases work in bash: `ll` expands to `ls -alF` (test: `bash -i -c 'alias | grep ll'`)
+- [ ] Aliases work in zsh: `ll` expands to `ls -alF` (test: `zsh -i -c 'alias | grep ll'`)
+
+**Local Configuration**
+- [ ] `$XDG_CONFIG_HOME/shell/local.sh` exists and is readable
+- [ ] Custom aliases in `local.sh` load after reload (add `alias mytest='echo OK'`, then `exec $SHELL && mytest`)
+
+**Idempotency**
+- [ ] Second `dotctl install` run succeeds without errors
+- [ ] No conflicts or symlink errors on re-run
+
+**Binary & Tools**
+- [ ] `dotctl --version` or `which dotctl` works
+- [ ] `stow --version` works
+- [ ] `zsh --version` works

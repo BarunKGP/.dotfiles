@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
       args:
         DOTFILES_REPO: https://github.com/BarunKGP/.dotfiles.git
+        BUILDER_BRANCH: feat/go-cli
         DOTFILES_BRANCH: feat/modularize
         INSTALL_FLAGS: --skip-optional
     container_name: alpine-dotfiles-test

@@ -1,10 +1,23 @@
+# Stage 1: Build dotctl binary from feat/go-cli
+FROM golang:1.22-alpine AS builder
+
+ARG DOTFILES_REPO=https://github.com/BarunKGP/.dotfiles.git
+ARG BUILDER_BRANCH=feat/go-cli
+
+RUN apk add --no-cache git
+
+RUN git clone --branch ${BUILDER_BRANCH} ${DOTFILES_REPO} /build
+WORKDIR /build
+RUN go build -o bin/dotctl ./cmd/dotctl
+
+# Stage 2: Runtime (Alpine, no Go)
 FROM alpine:latest
 
 ARG DOTFILES_REPO=https://github.com/BarunKGP/.dotfiles.git
-ARG DOTFILES_BRANCH=main
+ARG DOTFILES_BRANCH=feat/modularize
 ARG INSTALL_FLAGS=--skip-optional
 
-# Bootstrap: only what's needed before install.sh runs
+# Bootstrap: only what's needed before dotctl install runs
 RUN apk add --no-cache \
     openssh \
     openssh-client \
@@ -17,6 +30,9 @@ RUN apk add --no-cache \
     sudo \
     shadow
 
+# Copy dotctl binary from builder stage
+COPY --from=builder /build/bin/dotctl /usr/local/bin/dotctl
+
 # Create testuser (bash as initial shell — zsh installed by dotfiles)
 RUN addgroup -g 1000 testuser && \
     adduser -D -u 1000 -G testuser -s /bin/bash testuser && \
@@ -28,12 +44,14 @@ RUN mkdir -p /etc/sudoers.d && \
         >> /etc/sudoers.d/testuser && \
     chmod 0440 /etc/sudoers.d/testuser
 
-# Clone and install dotfiles as testuser
+# Clone dotfiles from DOTFILES_BRANCH (default feat/modularize with shell config)
 RUN mkdir -p /home/testuser && chown -R testuser:testuser /home/testuser
 USER testuser
 ENV HOME=/home/testuser
 RUN git clone --branch ${DOTFILES_BRANCH} ${DOTFILES_REPO} ${HOME}/.dotfiles
-RUN cd ${HOME}/.dotfiles && chmod +x install.sh && bash ./install.sh ${INSTALL_FLAGS}
+
+# Run dotctl install (packages already in base image, just stow and configure shells)
+RUN cd ${HOME}/.dotfiles && dotctl install --no-packages ${INSTALL_FLAGS}
 
 # Set zsh as default shell now that it's installed (bypasses PAM, no chsh needed)
 USER root

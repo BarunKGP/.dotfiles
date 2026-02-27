@@ -28,7 +28,7 @@ func Detect(osType osdetect.OSType, lookup LookupFunc) Manager {
 
 	managers := managerPriority(osType)
 	for _, name := range managers {
-		if _, err := lookup(name); err == nil {
+		if pathExists(lookup, name) {
 			return New(name, lookup)
 		}
 	}
@@ -68,6 +68,21 @@ func managerPriority(osType osdetect.OSType) []string {
 	default:
 		return []string{"apt", "apk", "brew", "dnf"}
 	}
+}
+
+// pathExists checks both standard PATH and common system paths.
+func pathExists(lookup LookupFunc, cmd string) bool {
+	if _, err := lookup(cmd); err == nil {
+		return true
+	}
+	// Also check common system paths for tools like apk, apt-get
+	paths := []string{"/sbin/" + cmd, "/usr/sbin/" + cmd, "/usr/bin/" + cmd, "/bin/" + cmd}
+	for _, p := range paths {
+		if _, err := os.Stat(p); err == nil {
+			return true
+		}
+	}
+	return false
 }
 
 // BaseManager provides common functionality.
