@@ -62,7 +62,8 @@ func managerPriority(osType osdetect.OSType) []string {
 	case osdetect.MacOS:
 		return []string{"brew"}
 	case osdetect.WSL2:
-		return []string{"apt", "brew"}
+		// WSL2 can run Ubuntu (apt) or Alpine (apk), try both
+		return []string{"apt", "apk", "brew"}
 	case osdetect.Linux:
 		return []string{"apt", "apk", "dnf", "pacman"}
 	default:
