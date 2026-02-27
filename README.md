@@ -1,23 +1,26 @@
-# Dotfile management and organization
+# Dotfiles — Portable Configuration for Bash, Zsh, Tmux, Neovim & Git
 
-This repo contains configurations for bash, zsh, tmux, neovim, git, and espanso, designed to be portable across WSL2, macOS, and Linux environments.
+This repo contains portable shell, editor, and terminal configurations for bash, zsh, tmux, neovim, git, and espanso—designed to work seamlessly across **WSL2, macOS, and Linux**.
 
 ## Quick Start
 
-Clone this repo on a new machine:
+Clone this repo and run the installer:
+
 ```sh
 git clone https://github.com/BarunKGP/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-./install.sh
+dotctl install
 ```
 
-The `install.sh` script will:
-- Detect your OS (WSL2, macOS, or Linux)
-- Check for [GNU stow](https://www.gnu.org/software/stow/) (required)
-- Symlink all packages to your home directory
-- Create a machine-local config file for environment-specific settings
+The installer will:
+- ✅ Detect your OS (WSL2, macOS, or Linux)
+- ✅ Detect your package manager (apt, apk, brew, dnf)
+- ✅ Install packages (zsh, neovim, tmux, fzf, ripgrep, espanso, etc.)
+- ✅ Stow dotfiles to symlink configs to your home directory
+- ✅ Set zsh as default shell (if available)
+- ✅ Create `~/.config/shell/local.sh` for machine-specific settings
 
-After installation, edit `~/.config/shell/local.sh` to add machine-specific configuration (API keys, Windows paths for WSL2, etc.).
+After installation, customize `~/.config/shell/local.sh` with your personal configuration (API keys, Windows paths for WSL2, etc.).
 
 ## Architecture
 
@@ -46,25 +49,61 @@ This repo also contains configurations for:
 - **git**: Global git configuration and aliases
 - **espanso**: Text expansion snippets (optional)
 
-## Setup
+## Installation
 
-### Standard Installation
+### Using dotctl (Recommended)
+
+`dotctl` is a Go-based CLI tool that provides a modern, testable installer with feature parity to the original shell scripts.
+
+```sh
+dotctl install
+```
+
+**Flags:**
+- `--minimal` — Skip editor (nvim) and terminal (tmux) packages
+- `--no-packages` — Skip package installation (stow configs only)
+- `--skip-optional` — Skip optional packages (espanso)
+- `--dry-run` — Preview what would be installed without making changes
+- `--non-interactive` — Skip interactive prompts
+
+**Examples:**
+```sh
+# Full install with all packages
+dotctl install
+
+# Minimal setup for devcontainers
+dotctl install --minimal
+
+# Just stow configs, no package manager
+dotctl install --no-packages
+
+# Dry-run preview
+dotctl install --dry-run
+```
+
+### Alternative: Shell-Based Installation (Legacy)
+
+For compatibility, the original shell installer is still available:
 
 ```sh
 ./install.sh
 ```
 
-For minimal setup (useful in devcontainers or minimal environments):
+For minimal setup:
 ```sh
 ./install.sh --minimal
 ```
 
 ### Manual Installation
 
-If you prefer to stow packages individually:
+If you prefer to stow packages individually without the installer:
 
 ```sh
-stow bash zsh nvim tmux git -d /path/to/.dotfiles -t $HOME
+# Stow specific packages
+stow bash zsh nvim tmux git -d ~/.dotfiles -t $HOME
+
+# Or use dotctl's dry-run to see what would be stowed
+dotctl stow --help
 ```
 
 ### Machine-Local Configuration
@@ -142,6 +181,52 @@ espanso is a text expander for frequently used snippets. The tracked files only 
 > The `espanso/match/base.yml` and `espanso/match/emory.yml` files are **gitignored** for security.
 > Never commit passwords, credentials, or personal information. The `.example.yml` files serve as templates.
 
+## dotctl — Modern Go-Based Installer
+
+**dotctl** is a portable, testable CLI tool that replaces the original shell-based installer with:
+
+- **OS Detection** — Automatically detects WSL2, macOS, or Linux
+- **Package Manager Support** — Works with apt, apk, brew, dnf (auto-detected)
+- **Stow Integration** — Symlinks dotfiles with conflict detection
+- **Dry-run Mode** — Preview changes before applying: `dotctl install --dry-run`
+- **Idempotent** — Safe to run multiple times (second run skips completed steps)
+- **Tested** — Verified with unit tests and e2e Docker testing
+
+### Using dotctl
+
+```sh
+# View available commands
+dotctl --help
+
+# Full installation
+dotctl install
+
+# View what would be installed
+dotctl install --dry-run
+
+# Health check
+dotctl doctor
+```
+
+### Testing
+
+The installation is tested using Docker with Alpine Linux. To run the e2e tests:
+
+```sh
+docker-compose build
+docker-compose up -d
+docker-compose exec -u testuser alpine-dotfiles-test bash -c '
+  echo "Testing symlinks..."
+  ls -l ~/.bashrc ~/.zshrc ~/.gitconfig ~/.tmux.conf
+
+  echo "Testing aliases..."
+  bash -i -c "alias ll"
+
+  echo "Testing idempotency..."
+  cd ~/.dotfiles && dotctl install --skip-optional
+'
+```
+
 ---
 
 ## OS-Specific Notes
@@ -170,6 +255,26 @@ espanso is a text expander for frequently used snippets. The tracked files only 
 
 ## Troubleshooting
 
+### Installation Issues
+
+**dotctl install fails:**
+```bash
+# Check system dependencies
+dotctl doctor
+
+# Preview installation (no changes made)
+dotctl install --dry-run
+
+# Run with verbose output
+dotctl install --verbose
+```
+
+**Package manager not detected:**
+- Ensure your package manager (apt, brew, apk, dnf) is installed
+- Use `--no-packages` to skip package installation and stow configs only
+
+### Shell Configuration Issues
+
 **Shell not loading modules:**
 - Check that `$DOTFILES` is correctly set: `echo $DOTFILES`
 - Verify `~/.config/shell/local.sh` exists and is readable
@@ -178,7 +283,7 @@ espanso is a text expander for frequently used snippets. The tracked files only 
 **Stow conflicts:**
 - Check for existing symlinks: `ls -la ~/ | grep "\->"`
 - Remove old symlinks before stowing: `rm ~/.bashrc ~/.zshrc ~/.tmux.conf`
-- Use `stow --restow` to replace existing links
+- Use `stow --restow` to replace existing links (or `dotctl install` which does this automatically)
 
 **macOS zsh issues:**
 - macOS Catalina+ defaults to zsh; ensure `~/.zshrc` is sourced
