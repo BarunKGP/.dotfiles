@@ -52,10 +52,7 @@ RUN git clone --branch ${DOTFILES_BRANCH} ${DOTFILES_REPO} ${HOME}/.dotfiles
 
 # Run dotctl install (as root so it can access apk in /sbin, but install for testuser)
 USER root
-RUN echo "=== Testing apk detection ===" && \
-    ls -la /sbin/apk && \
-    which apk && \
-    cd /home/testuser/.dotfiles && HOME=/home/testuser dotctl install --verbose ${INSTALL_FLAGS} && \
+RUN cd /home/testuser/.dotfiles && HOME=/home/testuser dotctl install ${INSTALL_FLAGS} && \
     chown -R testuser:testuser /home/testuser
 USER testuser
 

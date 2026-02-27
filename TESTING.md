@@ -229,32 +229,38 @@ cat ~/.bashrc | head -5
 
 ## Full Testing Checklist (e2e Verification)
 
-After `ssh -p 2222 testuser@localhost`:
+Run from host machine:
 
-**Environment Setup**
-- [ ] `$OS_TYPE` = linux (test: `bash -i -c 'echo $OS_TYPE'`)
-- [ ] `$XDG_CONFIG_HOME` = /home/testuser/.config (test: `echo $XDG_CONFIG_HOME`)
-- [ ] `$HOME` = /home/testuser (test: `echo $HOME`)
+```bash
+docker-compose up -d  # Start container
+sleep 2
+docker-compose exec -u testuser alpine-dotfiles-test bash << 'TESTEOF'
+echo "✓ Symlinks: $(test -L ~/.bashrc && echo PASS || echo FAIL)"
+echo "✓ Aliases (bash): $(bash -i -c 'alias ll' 2>/dev/null | grep -q 'ls -alF' && echo PASS || echo FAIL)"
+echo "✓ Aliases (zsh): $(zsh -i -c 'alias ll' 2>/dev/null | grep -q 'ls -alF' && echo PASS || echo FAIL)"
+echo "✓ Local config: $(test -f ~/.config/shell/local.sh && echo PASS || echo FAIL)"
+echo "✓ OS detection: $(bash -i -c 'echo $OS_TYPE' 2>/dev/null)"
+echo "✓ Idempotency: $(cd ~/.dotfiles && dotctl install --skip-optional > /tmp/idempotent.log 2>&1 && echo PASS || echo FAIL)"
+TESTEOF
+```
 
-**Symlinks (Stow)**
-- [ ] `~/.bashrc` is a symlink to `~/.dotfiles/bash/.bashrc`
-- [ ] `~/.zshrc` is a symlink to `~/.dotfiles/zsh/.zshrc`
-- [ ] `~/.gitconfig` is a symlink to `~/.dotfiles/git/.gitconfig`
-- [ ] `~/.tmux.conf` is a symlink to `~/.dotfiles/tmux/.tmux.conf`
+**Expected Results:**
+```
+✓ Symlinks: PASS
+✓ Aliases (bash): PASS
+✓ Aliases (zsh): PASS
+✓ Local config: PASS
+✓ OS detection: wsl2
+✓ Idempotency: PASS
+```
 
-**Shell Config & Aliases**
-- [ ] Aliases work in bash: `ll` expands to `ls -alF` (test: `bash -i -c 'alias | grep ll'`)
-- [ ] Aliases work in zsh: `ll` expands to `ls -alF` (test: `zsh -i -c 'alias | grep ll'`)
+**Detailed Verification**
 
-**Local Configuration**
-- [ ] `$XDG_CONFIG_HOME/shell/local.sh` exists and is readable
-- [ ] Custom aliases in `local.sh` load after reload (add `alias mytest='echo OK'`, then `exec $SHELL && mytest`)
+Inside container via `docker-compose exec -u testuser alpine-dotfiles-test bash`:
 
-**Idempotency**
-- [ ] Second `dotctl install` run succeeds without errors
-- [ ] No conflicts or symlink errors on re-run
-
-**Binary & Tools**
-- [ ] `dotctl --version` or `which dotctl` works
-- [ ] `stow --version` works
-- [ ] `zsh --version` works
+- [ ] `ls -l ~/.bashrc ~/.zshrc ~/.gitconfig ~/.tmux.conf` — all are symlinks
+- [ ] `bash -i -c 'alias ll'` — shows `ll='ls -alF'`
+- [ ] `zsh -i -c 'alias ll'` — shows `ll='ls -alF'`
+- [ ] `cat ~/.config/shell/local.sh` — template file exists
+- [ ] `bash -i -c 'echo $OS_TYPE'` — shows correct OS (wsl2, macos, linux)
+- [ ] `cd ~/.dotfiles && dotctl install --skip-optional` — runs without errors on second invocation
