@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/BarunKGP/dotfiles/dotctl/internal/envconfig"
+	"github.com/BarunKGP/dotfiles/dotctl/internal/languages"
 	"github.com/BarunKGP/dotfiles/dotctl/internal/logging"
 	"github.com/BarunKGP/dotfiles/dotctl/internal/manifest"
 	"github.com/BarunKGP/dotfiles/dotctl/internal/osdetect"
@@ -91,10 +92,16 @@ func (i *Installer) Run(ctx context.Context) error {
 		}
 	}
 
-	// Step 7: Print post-install guidance
+	// Step 7: Render language environment
+	if err := i.renderLanguageEnv(); err != nil {
+		i.Logger.Warn(fmt.Sprintf("language env render failed: %v", err))
+		// non-fatal — user can run: dotctl env render
+	}
+
+	// Step 8: Print post-install guidance
 	i.printPostInstallGuidance()
 
-	// Step 8: Print next steps
+	// Step 9: Print next steps
 	i.printNextSteps()
 
 	return nil
@@ -239,6 +246,39 @@ func (i *Installer) ensureLocalConfig() error {
 		i.Logger.Skip(fmt.Sprintf("Local config already exists: %s", configPath))
 	}
 
+	return nil
+}
+
+func (i *Installer) renderLanguageEnv() error {
+	xdgHome := os.Getenv("XDG_CONFIG_HOME")
+	if xdgHome == "" {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return fmt.Errorf("failed to get home directory: %w", err)
+		}
+		xdgHome = filepath.Join(home, ".config")
+	}
+
+	registry := languages.NewRegistry()
+	script, err := registry.Render(context.Background())
+	if err != nil {
+		return fmt.Errorf("render failed: %w", err)
+	}
+
+	if i.Opts.DryRun {
+		i.Logger.DryRun("Would render language environment")
+		return nil
+	}
+
+	generatedDir := filepath.Join(xdgHome, "shell", "generated")
+	if err := os.MkdirAll(generatedDir, 0755); err != nil {
+		return err
+	}
+	outputPath := filepath.Join(generatedDir, "languages.sh")
+	if err := os.WriteFile(outputPath, []byte(script), 0644); err != nil {
+		return err
+	}
+	i.Logger.Done(fmt.Sprintf("Generated language environment: %s", outputPath))
 	return nil
 }
 

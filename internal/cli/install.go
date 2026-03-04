@@ -13,6 +13,7 @@ type installCmd struct {
 	minimal        bool
 	noPackages     bool
 	skipOptional   bool
+	profile        string
 }
 
 func newInstallCmd() *cobra.Command {
@@ -45,6 +46,12 @@ func newInstallCmd() *cobra.Command {
 		false,
 		"Skip optional package groups",
 	)
+	cmd.Flags().StringVar(
+		&ic.profile,
+		"profile",
+		"default",
+		"Installation profile (default, minimal, workstation, devcontainer)",
+	)
 
 	return cmd
 }
@@ -58,6 +65,7 @@ func (ic *installCmd) run(ctx context.Context) error {
 		Minimal:        ic.minimal,
 		NoPackages:     ic.noPackages,
 		SkipOptional:   ic.skipOptional,
+		Profile:        ic.profile,
 		DotfilesDir:    cfg.DotfilesDir,
 		NonInteractive: cfg.NonInteractive,
 		DryRun:         cfg.DryRun,

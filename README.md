@@ -83,7 +83,11 @@ dotctl install --dry-run
 
 ### Alternative: Shell-Based Installation (Legacy)
 
-For compatibility, the original shell installer is still available:
+> **Note**: The original shell-based installer (`./install.sh`) is now a thin shim that calls `dotctl install`.
+> All installation logic has been migrated to the Go CLI for better testability and maintainability.
+> The shell installer is maintained only for backward compatibility with existing documentation.
+
+For compatibility, the shell installer is still available:
 
 ```sh
 ./install.sh
@@ -93,6 +97,8 @@ For minimal setup:
 ```sh
 ./install.sh --minimal
 ```
+
+Both `./install.sh` and `dotctl install` produce identical results. We recommend using `dotctl install` directly for new workflows.
 
 ### Manual Installation
 

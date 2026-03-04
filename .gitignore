@@ -7,3 +7,8 @@ shell/local.sh
 # Espanso sensitive match files (contain passwords and personal info)
 espanso/match/base.yml
 espanso/match/emory.yml
+
+.plan
+.claude
+
+./bin/

@@ -17,6 +17,7 @@ unset -f _detect_os
 # XDG Base Directory Specification
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 
-# Go paths
-export GOROOT="/usr/local/go"
-export GOPATH="$HOME/go"
+# Source generated language environment (created by dotctl env render)
+if [ -f "$XDG_CONFIG_HOME/shell/generated/languages.sh" ]; then
+	. "$XDG_CONFIG_HOME/shell/generated/languages.sh"
+fi

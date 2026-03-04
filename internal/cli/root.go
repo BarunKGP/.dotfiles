@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+
+	"github.com/BarunKGP/dotfiles/dotctl/internal/config"
 )
 
 type GlobalConfig struct {
@@ -15,6 +17,7 @@ type GlobalConfig struct {
 	DryRun         bool
 	Verbose        bool
 	JSON           bool
+	Config         *config.Config
 }
 
 var globalConfig GlobalConfig
@@ -104,6 +107,17 @@ func resolveDotfilesDir() error {
 
 	// Fall back to cwd
 	globalConfig.DotfilesDir = cwd
+
+	// Try to load dotctl.yaml (non-fatal if not found)
+	cfg, err := config.Load(globalConfig.DotfilesDir)
+	if err != nil {
+		// Log warning but don't fail - packages.conf is fallback
+		if globalConfig.Verbose {
+			fmt.Fprintf(os.Stderr, "Warning: Failed to load dotctl.yaml: %v\n", err)
+		}
+	}
+	globalConfig.Config = cfg
+
 	return nil
 }
 

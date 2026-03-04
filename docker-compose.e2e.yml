@@ -1,0 +1,21 @@
+services:
+  dotfiles-e2e-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.e2e-final
+      args:
+        DOTFILES_REPO: https://github.com/BarunKGP/.dotfiles.git
+        DOTFILES_BRANCH: feat/modularize
+    container_name: dotfiles-e2e-test
+    ports:
+      - "2223:22"
+    environment:
+      - TERM=xterm-256color
+    stdin_open: true
+    tty: true
+    networks:
+      - dotfiles-e2e-test
+
+networks:
+  dotfiles-e2e-test:
+    driver: bridge

@@ -1,0 +1,133 @@
+# dotctl.yaml — Configuration for dotfiles installer and container management
+#
+# This file defines:
+# - Installation profiles (minimal, default, workstation, devcontainer)
+# - Package definitions with manager-specific names
+# - Container and deployment settings (phases 006-007)
+#
+# IMPORTANT: This is an example file. Rename to dotctl.yaml to use.
+# If dotctl.yaml is not present, packages.conf will be used as fallback.
+
+profiles:
+  default:
+    - util
+    - shell
+    - editor
+    - terminal
+  minimal:
+    - shell
+  workstation:
+    - util
+    - shell
+    - editor
+    - terminal
+    - languages
+  devcontainer:
+    - util
+    - shell
+    - editor
+
+packages:
+  # Utility packages
+  tree:
+    group: util
+    install:
+      apt: tree
+      apk: tree
+      brew: tree
+      dnf: tree
+
+  fzf:
+    group: util
+    install:
+      apt: fzf
+      apk: fzf
+      brew: fzf
+      dnf: fzf
+
+  ripgrep:
+    group: util
+    install:
+      apt: ripgrep
+      apk: ripgrep
+      brew: ripgrep
+      dnf: ripgrep
+
+  # Shell packages
+  zsh:
+    group: shell
+    install:
+      apt: zsh
+      apk: zsh
+      brew: zsh
+      dnf: zsh
+
+  # Editor
+  neovim:
+    group: editor
+    install:
+      apt: neovim
+      apk: neovim
+      brew: neovim
+      dnf: neovim
+
+  # Terminal
+  tmux:
+    group: terminal
+    install:
+      apt: tmux
+      apk: tmux
+      brew: tmux
+      dnf: tmux
+
+  # Languages
+  go:
+    group: languages
+    install:
+      apt: golang-go
+      apk: go
+      brew: go
+      dnf: golang
+
+  python3:
+    group: languages
+    install:
+      apt: python3
+      apk: python3
+      brew: python3
+      dnf: python3
+
+  nvm:
+    group: languages
+    install:
+      custom: scripts/packages/nvm.sh
+
+  # Optional packages
+  pyenv:
+    group: optional
+    install:
+      custom: scripts/packages/pyenv.sh
+
+  espanso:
+    group: optional
+    install:
+      custom: scripts/packages/espanso.sh
+
+# Container configuration (used in phase 006)
+# This defines how to build and run a development container
+container:
+  base_image: alpine:3.21
+  registry: ghcr.io/BarunKGP/dotctl-dev
+  ssh_port: 2222
+  user: dev
+  packages_flags: --skip-optional
+
+# Deployment configuration (used in phase 007)
+# This defines how to deploy dotfiles to remote systems (e.g., Kubernetes)
+deploy:
+  k8s:
+    context: homelab
+    namespace: dotfiles
+    storage: 10Gi
+    cpu: 500m
+    memory: 512Mi
