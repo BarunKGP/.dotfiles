@@ -1,9 +1,13 @@
 # Final E2E test Dockerfile with all pieces including nvm custom install
+# Builds dotctl from standalone github.com/BarunKGP/dotctl repository
 
 FROM golang:1.22-alpine AS builder
 
+ARG DOTCTL_REPO=https://github.com/BarunKGP/dotctl.git
+ARG DOTCTL_BRANCH=main
+
 RUN apk add --no-cache git
-COPY dotctl-source /build-dotctl
+RUN git clone --branch ${DOTCTL_BRANCH} ${DOTCTL_REPO} /build-dotctl
 WORKDIR /build-dotctl
 RUN go build -o bin/dotctl ./cmd/dotctl
 

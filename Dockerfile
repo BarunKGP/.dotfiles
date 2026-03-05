@@ -1,12 +1,12 @@
-# Stage 1: Build dotctl binary from feat/go-cli
+# Stage 1: Build dotctl binary from standalone dotctl repository
 FROM golang:1.22-alpine AS builder
 
-ARG DOTFILES_REPO=https://github.com/BarunKGP/.dotfiles.git
-ARG BUILDER_BRANCH=feat/go-cli
+ARG DOTCTL_REPO=https://github.com/BarunKGP/dotctl.git
+ARG DOTCTL_BRANCH=main
 
 RUN apk add --no-cache git
 
-RUN git clone --branch ${BUILDER_BRANCH} ${DOTFILES_REPO} /build
+RUN git clone --branch ${DOTCTL_BRANCH} ${DOTCTL_REPO} /build
 WORKDIR /build
 RUN go build -o bin/dotctl ./cmd/dotctl
 

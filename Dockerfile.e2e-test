@@ -1,10 +1,13 @@
-# Dockerfile for E2E testing of new dotctl standalone repository
-# This version uses the local updated packages.conf with languages group
+# Dockerfile for E2E testing of dotctl standalone repository
+# Builds dotctl from github.com/BarunKGP/dotctl and uses updated packages.conf
 
 FROM golang:1.22-alpine AS builder
 
+ARG DOTCTL_REPO=https://github.com/BarunKGP/dotctl.git
+ARG DOTCTL_BRANCH=main
+
 RUN apk add --no-cache git
-COPY dotctl-source /build-dotctl
+RUN git clone --branch ${DOTCTL_BRANCH} ${DOTCTL_REPO} /build-dotctl
 WORKDIR /build-dotctl
 RUN go build -o bin/dotctl ./cmd/dotctl
 
